@@ -1,0 +1,6 @@
+@sentry_core_HostAddress = http://localhost:5166
+
+GET {{sentry_core_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
