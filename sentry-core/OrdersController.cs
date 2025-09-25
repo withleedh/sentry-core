@@ -17,6 +17,32 @@ public class OrdersController : ControllerBase
     {
         _ordersService = ordersService;
     }
+    
+    [HttpGet("{id}")]
+    public IActionResult GetProduct(int id)
+    {
+        try
+        {
+            return StatusCode(500, "Get Product error called");
+        }
+        catch (Exception ex) // 그 외 예상치 못한 모든 예외
+        { ;
+            return StatusCode(500, "An internal server error occurred.");
+        }
+    }
+    [HttpGet("get2/{id}")]
+    public IActionResult GetProduct2(int id)
+    {
+        try
+        {
+            return StatusCode(500, "get2 called");
+        }
+        catch (Exception ex)
+        {
+            SentrySdk.CaptureException(ex);
+            return StatusCode(500, "An internal server error occurred.");
+        }
+    }
 
     [HttpPost]
     public async Task<IActionResult> CreateOrder([FromBody] CreateOrderDto createOrderDto)
@@ -28,10 +54,8 @@ public class OrdersController : ControllerBase
         }
         catch (Exception ex)
         {
-            // 🧑‍🔬 Sentry Scope를 이용해 이번 예외에만 적용될 정보를 추가합니다.
             SentrySdk.ConfigureScope(scope =>
             {
-                // 🏷️ Tag: 검색과 필터링을 위해 사용합니다.
                 var userPlan = createOrderDto.UserId == "user1" ? "premium" : "free";
                 scope.SetTag("user_plan", userPlan);
                 
@@ -40,6 +64,7 @@ public class OrdersController : ControllerBase
                 SentrySdk.CaptureException(ex);
             });
             return StatusCode(500, "Failed to process order.");
+            
         }
     }
 }

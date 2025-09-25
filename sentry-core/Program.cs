@@ -1,3 +1,4 @@
+using sentry_core.Middlewares;
 using sentry_core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,9 +9,15 @@ builder.Services.AddScoped<IOrdersService, OrdersService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.WebHost.UseSentry();
+
+
 
 var app = builder.Build();
 app.UseSentryTracing();
+
+app.UseMiddleware<SentryReporterMiddleware>();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -20,6 +27,6 @@ if (app.Environment.IsDevelopment())
 }
 app.UseAuthorization();
 app.MapControllers();
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.Run();
